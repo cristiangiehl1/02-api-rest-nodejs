@@ -346,3 +346,46 @@ Isso gerará uma pasta com o nome build com todo o nosso código convertido.
 Para ter certeza que está funcionando tem que ser possível rodar o servidor
 
 $ node build/server.js
+
+
+Devemos também ajustar o tipo de banco de dados que a nossa aplicação aceita. Para isso vamos configurar uma nova variavel ambiente. O render só aceita postgres.
+
+```
+const envSchema = z.object({
+  NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
+  DATABASE_URL: z.string(),
+  DATABASE_CLIENT: z.enum(['sqlite', 'pg']),
+  PORT: z.number().default(3333),
+})
+```
+
+Além disso, precisamos instalar o pg.
+
+$ npm i pg
+
+Como estamos utilizando o Knex para fazer a conexão com o banco de dados, temos que ajustar a connection, que muda de um banco de dados para o outro.
+
+```
+export const config: Knex.Config = {
+  client: env.DATABASE_CLIENT,
+  connection:
+    env.DATABASE_CLIENT === 'sqlite'
+      ? {
+          filename: env.DATABASE_URL,
+        }
+      : env.DATABASE_URL,
+  useNullAsDefault: true,
+  migrations: {
+    extension: 'ts',
+    directory: './db/migrations',
+  },
+}
+```
+
+Passar também uma config no nosso package.json para ajustar a versão do node que o knex usa.
+
+```
+"engines": {
+  "node": ">= 18"
+},
+```

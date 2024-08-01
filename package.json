@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "- O Fastify tem muito mais updates e um time muito mais ativo do que o Express.\r - Uma das opções mais populares do Node.js.\r - Tem muita similiaridade com o Express.\r - É mais performático e está mais pronto para lidar com as novas funcionalidades do javascript (ex.: typescript). Além disso, está mais preparado para lidar com o assíncronismo do JS.",
   "main": "index.js",
+  "engines": {
+    "node": ">= 18"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "knex": "node --import tsx ./node_modules/knex/bin/cli.js",
@@ -18,7 +21,7 @@
     "dotenv": "^16.4.5",
     "fastify": "^4.28.1",
     "knex": "^3.1.0",
-    "sqlite3": "^5.1.7",
+    "pg": "^8.12.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -30,6 +33,7 @@
     "tsup": "^8.2.3",
     "tsx": "^4.16.2",
     "typescript": "^5.5.4",
-    "vitest": "^2.0.5"
+    "vitest": "^2.0.5",
+    "sqlite3": "^5.1.7"
   }
 }

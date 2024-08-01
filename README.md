@@ -328,3 +328,21 @@ O exceSync permite executarmos linhas de comando no terminal.
 
 Dessa forma criamos testes que são isolados, sempre limpandos o banco de dados e executando ele do zero.
 
+# Deploy
+Nenhuma plataforma de deploy de Node consegue ler código em typescript.
+
+Precisamos converter nosso código para javascript. Para isso precisamos instalar uma ferramenta chamada tsup.
+
+$ npm i tsup -D
+
+Para rodar o código podemos criar um script
+
+```
+"build": "tsup src --out-dir build"
+```
+
+Isso gerará uma pasta com o nome build com todo o nosso código convertido.
+
+Para ter certeza que está funcionando tem que ser possível rodar o servidor
+
+$ node build/server.js

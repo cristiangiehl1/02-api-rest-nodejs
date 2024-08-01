@@ -227,4 +227,104 @@ declare module 'knex/types/tables' {
 
 
 # Testes automatizados
+- Unitários: testem exclusivamente uma unidade da sua aplicação (uma pequena parte da aplicação de forma completamente isolada).
+- Integração: comunicação entre duas ou mais unidades.
+- E2E: simulam um usuário operando na nossa aplicação.
+
+Olhar - Pirâmides de testes.
+
+base da pirâmide = testes unitários
+intermédio da pirâmide = testes de integração
+topo da pirâmide = testes E2E
+
+
+## E2E (ponta a ponta)
+Não dependem de nenhuma tecnologia, não dependem de arquitetura de software.
+
+São testes extremamente lentos comparado com os outros testes.
+
+- front-end: abre a página de login, digite o texto diego@rocketseat.com.br no campo com ID email, clique no botão.
+- back-end: chamadas HTTP, Websockets. 
+
+# Vitest (framework)
+
+$ npm i vitest -D
+
+O Vitest é um framework de teste unitário JavaScript/TypeScript moderno e fácil de usar. Ele é baseado no Jest, mas oferece recursos adicionais, como: Testes síncronos e assíncronos: Adequado para testar código que usa APIs ou outras dependências assíncronas.
+
+Os arquivos devem terminar com .spec.ts ou test.ts
+
+Os testes são compostos por nome do teste, o teste em si e a validação do teste (exepct()).
+
+Rodar os testes: 
+
+$ npx vitest
+
+## Supertest
+Para fazer as requisições HTTP para o servidor, vamos utilziar uma ferramenta chamada supertest, pois não queremos que o nossos testes rodem na mesma porta que o nossa api. O supertest nos permite fazer as requisições para o nosso back-end sem precisar colocar ela no ar.
+
+$ npm i supertest -D 
+
+O supertest não foi desenvolvido com a tipagem para TS, por isso devemos instalar um outro pacote com os seus tipos.
+
+$ npm i --save-dev @types/supertest
+
+## Resolvendo problema com o plugin do Fastify
+Para ter certeza que todos os plugins do Fastify foram lidos antes de os testes iniciarem, devemos utilizar um beforeAll().
+
+```
+beforeAll(async () => {
+  await app.ready()
+})
+```
+
+Também é importante limpar a aplicação da memória, para isso usamos o afterAll().
+
+```
+afterAll(async () => {
+  await app.close()
+})
+```
+
+## Algumas funções úteis do vitest
+
+- it.skip() => pula o teste.
+- it.todo() => o vitest vai avisar que tem um teste para ser feito.
+- it.only() => vai rodar somente aquele teste.
+
+## Banco de dados para testes
+Você precisa criar um banco específico para os testes, caso contrário todas as chamadas HTTP que você fizer afetarão o banco de dados da API.
+
+Criar um novo arquivo .env.test e colocar as variaveis de ambiente de testes.
+
+**NÃO É PRECISO DEFINIR A VARIAVEL DE AMBIENTE NODE_ENV='test', POIS ELA É PREENCHIDA AUTOMATICAMENTE PELO VISTEST OU JEST.**
+
+
+Alterar o nosso arquivo de validação das variaveis de ambiente com o zod para ler dinâmicamente quando estamos em ambiente de testes ou outro ambiente.
+
+
+```
+import { config } from 'dotenv'
+
+if (process.env.NODE_ENV === 'test') {
+  config({ path: '.env.test' })
+} else {
+  config()
+}
+```
+
+Assim criamos o banco de dados para os testes, mas as nossas migrations não foram geradas para esse banco. Logo, não temos a table 'transactions' no nosso novo banco de dados. Para isso, vamos ajustar os nossos testes da seguinte forma.
+
+```
+import { execSync } from 'node:child_process'
+
+beforeEach(() => {
+  execSync('npm run knex migrate:rollback --all')
+
+  execSync('npm run knex migrate:latest')
+})
+```
+O exceSync permite executarmos linhas de comando no terminal.
+
+Dessa forma criamos testes que são isolados, sempre limpandos o banco de dados e executando ele do zero.
 

@@ -1,19 +1,24 @@
 import fastify from 'fastify'
-import { knex } from './database'
+
+import { env } from './env'
+import { transactionsRoutes } from './routes/transactions'
+import cookie from '@fastify/cookie'
 
 const app = fastify()
 
-// GET, POST, PUT, PATCH, DELETE
-app.get('/hello', async () => {
-  const tables = await knex('sqlite_schema').select('*')
+app.register(cookie)
+app.addHook('preHandler', async (request) => {
+  console.log(`[${request.method} ${request.url}]`)
+})
 
-  return tables
+app.register(transactionsRoutes, {
+  prefix: 'transactions',
 })
 
 // app.listen retorna uma promise.
 app
   .listen({
-    port: 3333,
+    port: env.PORT,
   })
   .then(() => {
     console.log('HTTP server Running on PORT 3333.')

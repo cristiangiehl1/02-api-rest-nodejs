@@ -389,3 +389,10 @@ Passar também uma config no nosso package.json para ajustar a versão do node q
   "node": ">= 18"
 },
 ```
+
+# Render
+Para o nosso web service iniciar, precisamos colocar a linha de comando completa.
+
+$ npm install && npm run knex -- migrate:latest && npm run build
+
+Além disso, devemos adicionar as variaveis de ambiente no render.

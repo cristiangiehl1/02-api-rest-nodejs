@@ -4,6 +4,7 @@ import { app } from './app'
 // app.listen retorna uma promise.
 app
   .listen({
+    host: '0.0.0.0',
     port: env.PORT,
   })
   .then(() => {
